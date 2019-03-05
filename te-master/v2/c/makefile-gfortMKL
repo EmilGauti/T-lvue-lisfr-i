@@ -1,0 +1,25 @@
+#
+#-- 64 bit version ----------------------------------------------------
+MKLROOT=/opt/MKL/mkl
+F95BLAS=/opt/MKL/mkl/interfaces/blas95/lib95
+F95LAPA=/opt/MKL/mkl/interfaces/lapack95/lib95
+
+FortOptions64=-O3 -m64 -flto -march=native -fno-range-check -fuse-ld=bfd -fopenmp -I${F95BLAS}/include/intel64/lp64 -I${F95LAPA}/include/intel64/lp64 -I${MKLROOT}/include
+    
+#FortOptions64=-g -m64 -fopenmp -fno-range-check -ffpe-trap=invalid,zero,overflow -fbounds-check -I${F95BLAS}/include/intel64/lp64 -I${F95LAPA}/include/intel64/lp64 -I${MKLROOT}/include
+     
+    
+libOptions= ${F95BLAS}/lib/intel64/libmkl_blas95_lp64.a ${F95LAPA}/lib/intel64/libmkl_lapack95_lp64.a -L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl
+    
+    
+LIBDIRS=/usr/local/Slatec
+LIBSS=Slatec_gfort
+LIBDIR=/usr/local/UF_safn
+LIBS=Safn_g95_64_i32
+#----------------------------------------------------------------------
+
+
+adal: Mod_Precision.f90 Mod_Init.f90 Mod_Fields.f90 adal.f90 PAB.f90 PcAB.f90 PABz.f90 BAB.f90 Te.f90
+
+	gfortran $(FortOptions64) -o adal Mod_Precision.f90 Mod_Init.f90 Mod_Fields.f90 PAB.f90 PcAB.f90 PABz.f90 BAB.f90 adal.f90 Te.f90 -L$(LIBDIRS) -l$(LIBSS) $(libOptions)
+
